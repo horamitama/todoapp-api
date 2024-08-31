@@ -1,5 +1,8 @@
 package entity
 
 type Task struct {
-	Id
+	Base
+	Title  string `json:"title"`
+	Detail string `json:"detail"`
+	Status string `json:"status"`
 }

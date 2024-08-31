@@ -13,4 +13,11 @@ type Base struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
-// func (b *Base) beforeCreate(scope *gorm.) error {}
+func (b *Base) beforeCreate() error {
+	id, err := uuid.NewUUID()
+	if err != nil {
+		return err
+	}
+	b.ID = id
+	return nil
+}

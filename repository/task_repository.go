@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"todoapp-api/db"
 	"todoapp-api/entity"
 )
@@ -15,5 +16,6 @@ func CreateTask(task *entity.Task) error {
 }
 
 func GetTasks(task *entity.Task) error {
+	fmt.Println("hoge")
 	return nil
 }

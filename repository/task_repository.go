@@ -13,3 +13,7 @@ func CreateTask(task *entity.Task) error {
 	}
 	return nil
 }
+
+func GetTasks(task *entity.Task) error {
+	db := db.NewDB()
+}

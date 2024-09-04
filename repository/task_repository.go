@@ -15,5 +15,5 @@ func CreateTask(task *entity.Task) error {
 }
 
 func GetTasks(task *entity.Task) error {
-	db := db.NewDB()
+	return nil
 }

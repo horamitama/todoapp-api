@@ -31,7 +31,7 @@ func SignUpController(c *gin.Context) {
 	c.JSON(200, user)
 }
 
-func SigninController(c *gin.Context) {
+func SignIntController(c *gin.Context) {
 	db := db.NewDB()
 	user := entity.User{}
 	err := c.Bind(&user)
@@ -59,4 +59,16 @@ func SigninController(c *gin.Context) {
 	}
 
 	c.SetCookie("token", tokenString, 3600, "", os.Getenv("API_DOMAIN"), true, true)
+}
+
+func SignOutController(c *gin.Context) {
+	user := entity.User{}
+	err := c.Bind(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+	}
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	c.SetCookie("token", "", 0, "", os.Getenv("API_DOMAIN"), false, false)
 }

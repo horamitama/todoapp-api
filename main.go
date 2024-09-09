@@ -8,10 +8,12 @@ import (
 
 func main() {
 	r := gin.Default()
+	r.POST("/signup", controller.SignUp)
+	r.POST("/signin", controller.SignIn)
+	r.POST("/signout", controller.SignOut)
 	r.POST("/task", controller.CreateTask)
 	r.GET("/tasks", controller.GetTasks)
-	r.POST("/signup", controller.SignUpController)
-	r.POST("/signin", controller.SignIntController)
-	r.POST("/signout", controller.SignOutController)
+	r.PUT("/task/:id", controller.UpdateTask)
+	r.DELETE("/task/:id", controller.DeleteTask)
 	r.Run()
 }

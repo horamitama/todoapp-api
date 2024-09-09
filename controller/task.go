@@ -2,8 +2,8 @@ package controller
 
 import (
 	"log"
+	"todoapp-api/db"
 	"todoapp-api/entity"
-	"todoapp-api/repository"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,9 +20,16 @@ func CreateTask(c *gin.Context) {
 	if err != nil {
 		log.Fatal("error:", err)
 	}
-	err = repository.CreateTask(&task)
-	if err != nil {
-		log.Fatal()
-	}
 	c.JSON(200, gin.H{"task": task})
 }
+
+// func UpdateTask(c *gin.Context) {
+// 	db := db.NewDB()
+// 	task := entity.Task{}
+// 	err := c.Bind(&task)
+// 	if err != nil {
+// 		log.Fatal()
+// 	}
+// }
+
+func DeleteTask(c *gin.Context) {}

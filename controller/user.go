@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func SignUpController(c *gin.Context) {
+func SignUp(c *gin.Context) {
 	db := db.NewDB()
 	user := entity.User{}
 	err := c.Bind(&user)
@@ -31,7 +31,7 @@ func SignUpController(c *gin.Context) {
 	c.JSON(200, user)
 }
 
-func SignIntController(c *gin.Context) {
+func SignIn(c *gin.Context) {
 	db := db.NewDB()
 	user := entity.User{}
 	err := c.Bind(&user)
@@ -61,7 +61,7 @@ func SignIntController(c *gin.Context) {
 	c.SetCookie("token", tokenString, 3600, "", os.Getenv("API_DOMAIN"), true, true)
 }
 
-func SignOutController(c *gin.Context) {
+func SignOut(c *gin.Context) {
 	user := entity.User{}
 	err := c.Bind(&user)
 	if err != nil {

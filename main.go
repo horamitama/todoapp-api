@@ -12,8 +12,5 @@ func main() {
 	r.POST("/signin", controller.SignIn)
 	r.POST("/signout", controller.SignOut)
 	r.POST("/task", controller.CreateTask)
-	r.GET("/tasks", controller.GetTasks)
-	r.PUT("/task/:id", controller.UpdateTask)
-	r.DELETE("/task/:id", controller.DeleteTask)
 	r.Run()
 }

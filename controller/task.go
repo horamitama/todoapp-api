@@ -29,3 +29,7 @@ func CreateTask(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"task": task})
 }
+
+func GetTasks(c *gin.Context) {
+
+}

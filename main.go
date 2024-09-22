@@ -12,6 +12,6 @@ func main() {
 	r.POST("/signin", controller.SignIn)
 	r.POST("/signout", controller.SignOut)
 	r.POST("/task", controller.CreateTask)
-	r.GET("/task", controller.GetTasks)
+	r.GET("/tasks", controller.GetTasks)
 	r.Run()
 }

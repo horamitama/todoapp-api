@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 	"todoapp-api/db"
 	"todoapp-api/entity"
@@ -14,10 +13,10 @@ func CreateTask(c *gin.Context) {
 	task := entity.Task{}
 	err := c.Bind(&task)
 	if err != nil {
-		log.Fatal("error:", err)
+		c.JSON(http.StatusBadRequest, err)
 	}
 	storedUser := entity.User{}
-	err = db.Where("id = ?", task.UserRefer).First(&storedUser).Error
+	err = db.Where("id=?", task.UserRefer).First(&storedUser).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}
@@ -27,9 +26,27 @@ func CreateTask(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 	}
-	c.JSON(200, gin.H{"task": task})
+	c.JSON(http.StatusCreated, gin.H{"task": task})
 }
 
 func GetTasks(c *gin.Context) {
-
+	// db := db.NewDB()
+	user := entity.User{}
+	c.Bind(&user)
+	c.JSON(200, user)
+	// err := c.Bind(&user)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, err)
+	// }
+	// storedUser := entity.User{}
+	// err = db.Where("id=?", user.ID).First(&storedUser).Error
+	// if err != nil {
+	// 	c.JSON(http.StatusBadGateway, err)
+	// }
+	// storedTasks := []entity.Task{}
+	// err = db.Where("user_refer=?", storedUser.ID).Find(&storedTasks).Error
+	// if err != nil {
+	// 	c.JSON(http.StatusNoContent, gin.H{"message": "no content"})
+	// }
+	// c.JSON(http.StatusOK, gin.H{"tasks": storedTasks})
 }

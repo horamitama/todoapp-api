@@ -9,8 +9,8 @@ import (
 )
 
 func CreateTask(c *gin.Context) {
+	var task entity.Task
 	db := db.NewDB()
-	task := entity.Task{}
 	err := c.Bind(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)

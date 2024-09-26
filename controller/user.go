@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 	"todoapp-api/db"
-	"todoapp-api/entity"
+	"todoapp-api/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -14,7 +14,7 @@ import (
 
 func SignUp(c *gin.Context) {
 	db := db.NewDB()
-	user := entity.User{}
+	user := model.User{}
 	err := c.Bind(&user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -23,7 +23,7 @@ func SignUp(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	newUser := entity.User{Name: user.Name, Email: user.Email, Password: string(hash)}
+	newUser := model.User{Name: user.Name, Email: user.Email, Password: string(hash)}
 	err = db.Create(&newUser).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -33,12 +33,12 @@ func SignUp(c *gin.Context) {
 
 func SignIn(c *gin.Context) {
 	db := db.NewDB()
-	user := entity.User{}
+	user := model.User{}
 	err := c.Bind(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 	}
-	storedUser := entity.User{}
+	storedUser := model.User{}
 	err = db.Where("email = ?", user.Email).Find(&storedUser).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
@@ -62,7 +62,7 @@ func SignIn(c *gin.Context) {
 }
 
 func SignOut(c *gin.Context) {
-	user := entity.User{}
+	user := model.User{}
 	err := c.Bind(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)

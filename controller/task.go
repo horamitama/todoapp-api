@@ -3,24 +3,24 @@ package controller
 import (
 	"net/http"
 	"todoapp-api/db"
-	"todoapp-api/entity"
+	"todoapp-api/model"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CreateTask(c *gin.Context) {
-	var task entity.Task
+	var task model.Task
 	db := db.NewDB()
 	err := c.Bind(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}
-	storedUser := entity.User{}
+	storedUser := model.User{}
 	err = db.Where("id=?", task.UserRefer).First(&storedUser).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}
-	newTask := entity.Task{Title: task.Title, Detail: task.Detail, Status: task.Status}
+	newTask := model.Task{Title: task.Title, Detail: task.Detail, Status: task.Status}
 	newTask.UserRefer = storedUser.ID
 	err = db.Create(&newTask).Error
 	if err != nil {
@@ -31,19 +31,19 @@ func CreateTask(c *gin.Context) {
 
 func GetTasks(c *gin.Context) {
 	// db := db.NewDB()
-	user := entity.User{}
+	user := model.User{}
 	c.Bind(&user)
 	c.JSON(200, user)
 	// err := c.Bind(&user)
 	// if err != nil {
 	// 	c.JSON(http.StatusBadRequest, err)
 	// }
-	// storedUser := entity.User{}
+	// storedUser := model.User{}
 	// err = db.Where("id=?", user.ID).First(&storedUser).Error
 	// if err != nil {
 	// 	c.JSON(http.StatusBadGateway, err)
 	// }
-	// storedTasks := []entity.Task{}
+	// storedTasks := []model.Task{}
 	// err = db.Where("user_refer=?", storedUser.ID).Find(&storedTasks).Error
 	// if err != nil {
 	// 	c.JSON(http.StatusNoContent, gin.H{"message": "no content"})

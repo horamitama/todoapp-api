@@ -30,23 +30,7 @@ func CreateTask(c *gin.Context) {
 }
 
 func GetTasks(c *gin.Context) {
-	// db := db.NewDB()
 	user := model.User{}
 	c.Bind(&user)
 	c.JSON(200, user)
-	// err := c.Bind(&user)
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, err)
-	// }
-	// storedUser := model.User{}
-	// err = db.Where("id=?", user.ID).First(&storedUser).Error
-	// if err != nil {
-	// 	c.JSON(http.StatusBadGateway, err)
-	// }
-	// storedTasks := []model.Task{}
-	// err = db.Where("user_refer=?", storedUser.ID).Find(&storedTasks).Error
-	// if err != nil {
-	// 	c.JSON(http.StatusNoContent, gin.H{"message": "no content"})
-	// }
-	// c.JSON(http.StatusOK, gin.H{"tasks": storedTasks})
 }

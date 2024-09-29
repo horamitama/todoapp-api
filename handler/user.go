@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 	"todoapp-api/model"
-	usecase "todoapp-api/usercase"
+	"todoapp-api/usecase"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,6 +35,13 @@ func (uh *UserHandler) SignUp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "email and password are required"})
 		return
 	}
+
+	err = uh.uu.SignUp(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "created user"})
 }
 
 func (uh *UserHandler) LogIn(c *gin.Context) {}

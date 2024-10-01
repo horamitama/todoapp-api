@@ -39,11 +39,26 @@ func (uh *UserHandler) SignUp(c *gin.Context) {
 	err = uh.uu.SignUp(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "created user"})
 }
 
-func (uh *UserHandler) LogIn(c *gin.Context) {}
+func (uh *UserHandler) LogIn(c *gin.Context) {
+	var user model.User
+
+	err := c.ShouldBind(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = uh.uu.LogIn(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+}
 
 func (uh *UserHandler) LogOut(c *gin.Context) {}

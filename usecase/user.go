@@ -3,6 +3,7 @@ package usecase
 import (
 	"todoapp-api/model"
 	"todoapp-api/repository"
+	"todoapp-api/util"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -13,7 +14,7 @@ type UserUsecase struct {
 
 type UserUsecaseInterface interface {
 	SignUp(user *model.User) error
-	LogIn(user *model.User) error
+	LogIn(user *model.User) (string, error)
 	LogOut(user *model.User) error
 }
 
@@ -39,18 +40,23 @@ func (uu *UserUsecase) SignUp(user *model.User) error {
 	return nil
 }
 
-func (uu *UserUsecase) LogIn(user *model.User) error {
+func (uu *UserUsecase) LogIn(user *model.User) (string, error) {
 	storedUser, err := uu.ur.GetUserByEmail(user)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password))
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	token, err := util.GenerateJwtToken(user.ID)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
 func (uu *UserUsecase) LogOut(user *model.User) error {

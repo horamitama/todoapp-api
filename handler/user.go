@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 	"todoapp-api/model"
 	"todoapp-api/usecase"
 
@@ -54,11 +55,13 @@ func (uh *UserHandler) LogIn(c *gin.Context) {
 		return
 	}
 
-	err = uh.uu.LogIn(&user)
+	token, err := uh.uu.LogIn(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	c.SetCookie("token", token, int(24*time.Hour.Seconds()), "/", "/", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "logged in"})
 }
 
 func (uh *UserHandler) LogOut(c *gin.Context) {}

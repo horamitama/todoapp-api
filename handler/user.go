@@ -28,7 +28,7 @@ func (uh *UserHandler) SignUp(c *gin.Context) {
 
 	err := c.ShouldBind(&user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"err": "request invalid"})
 		return
 	}
 
@@ -51,7 +51,7 @@ func (uh *UserHandler) LogIn(c *gin.Context) {
 
 	err := c.ShouldBind(&user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"err": "request invalid"})
 		return
 	}
 
@@ -64,4 +64,7 @@ func (uh *UserHandler) LogIn(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "logged in"})
 }
 
-func (uh *UserHandler) LogOut(c *gin.Context) {}
+func (uh *UserHandler) LogOut(c *gin.Context) {
+	c.SetCookie("token", "", 0, "/", "/", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
+}

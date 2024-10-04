@@ -15,7 +15,6 @@ type UserUsecase struct {
 type UserUsecaseInterface interface {
 	SignUp(user *model.User) error
 	LogIn(user *model.User) (string, error)
-	LogOut(user *model.User) error
 }
 
 func NewUserUsecase(ur repository.UserRepositoryInterface) UserUsecaseInterface {
@@ -57,8 +56,4 @@ func (uu *UserUsecase) LogIn(user *model.User) (string, error) {
 	}
 
 	return token, nil
-}
-
-func (uu *UserUsecase) LogOut(user *model.User) error {
-	return nil
 }

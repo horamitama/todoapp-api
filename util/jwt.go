@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -18,10 +17,9 @@ func GenerateJwtToken(userId uint) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(key)
+	tokenString, err := token.SignedString([]byte(key))
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(tokenString)
 	return tokenString, nil
 }

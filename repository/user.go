@@ -12,8 +12,7 @@ type UserRepository struct {
 
 type UserRepositoryInterface interface {
 	CreateUser(user *model.User) error
-	GetUserByEmail(user *model.User) (model.User, error)
-	LogOut(user *model.User) error
+	GetUserByEmail(user *model.User, email string) error
 }
 
 func NewUserRepository(db *gorm.DB) UserRepositoryInterface {
@@ -29,15 +28,10 @@ func (ur *UserRepository) CreateUser(user *model.User) error {
 	return nil
 }
 
-func (ur *UserRepository) GetUserByEmail(user *model.User) (model.User, error) {
-	var storedUser model.User
-	err := ur.db.Where("email = ?", user.Email).Find(&storedUser).Error
+func (ur *UserRepository) GetUserByEmail(user *model.User, email string) error {
+	err := ur.db.Where("email = ?", email).Find(&user).Error
 	if err != nil {
-		return storedUser, err
+		return err
 	}
-	return storedUser, nil
-}
-
-func (ur *UserRepository) LogOut(user *model.User) error {
 	return nil
 }

@@ -13,18 +13,23 @@ func main() {
 	r := gin.Default()
 	db := db.NewDB()
 
-	ur := repository.NewUserRepository(db)
-	uu := usecase.NewUserUsecase(ur)
-	uh := handler.NewUserHandler(uu)
-	r.POST("/signup", uh.SignUp)
-	r.POST("/login", uh.LogIn)
-	r.POST("/logout", uh.LogOut)
+	// user route
+	userRepository := repository.NewUserRepository(db)
+	userUsecase := usecase.NewUserUsecase(userRepository)
+	userHandler := handler.NewUserHandler(userUsecase)
+	r.POST("/signup", userHandler.SignUp)
+	r.POST("/login", userHandler.LogIn)
+	r.POST("/logout", userHandler.LogOut)
 
-	// th := handler.NewTaskHandler()
-	// r.POST("/task", th.Create)
-	// r.GET("/task/:userId", th.List)
-	// r.GET("/task/:Id", th.Get)
-	// r.PUT("/task/:Id", th.Update)
-	// r.DELETE("/task/:Id", th.Delete)
-	r.Run()
+	// task route
+	taskRepository := repository.NewTaskRepository(db)
+	taskUseCase := usecase.NewTaskUsecase(taskRepository)
+	taskHandler := handler.NewTaskHandler(taskUseCase)
+	r.POST("/task", taskHandler.Create)
+	r.GET("/task", taskHandler.List)
+	r.GET("/task/:ID", taskHandler.Get)
+	r.PUT("/task/:ID", taskHandler.Update)
+	r.DELETE("/task/:ID", taskHandler.Delete)
+
+	r.Run(":8080")
 }

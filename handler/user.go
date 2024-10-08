@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"time"
 	"todoapp-api/model"
 	"todoapp-api/usecase"
 
@@ -32,11 +31,6 @@ func (uh *UserHandler) SignUp(c *gin.Context) {
 		return
 	}
 
-	if user.Email == "" || user.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "email and password are required"})
-		return
-	}
-
 	err = uh.uu.SignUp(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
@@ -60,8 +54,7 @@ func (uh *UserHandler) LogIn(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.SetCookie("token", token, int(24*time.Hour.Seconds()), "/", "/", false, true)
-	c.JSON(http.StatusOK, gin.H{"message": "logged in"})
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func (uh *UserHandler) LogOut(c *gin.Context) {

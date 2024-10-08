@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"todoapp-api/model"
 	"todoapp-api/repository"
 	"todoapp-api/util"
@@ -27,6 +28,10 @@ func (uu *UserUsecase) SignUp(user *model.User) error {
 		return err
 	}
 
+	if user.Email == "" || user.Password == "" {
+		return errors.New("email and password are required")
+	}
+
 	newUser := model.User{
 		Email:    user.Email,
 		Password: string(hash),
@@ -40,7 +45,9 @@ func (uu *UserUsecase) SignUp(user *model.User) error {
 }
 
 func (uu *UserUsecase) LogIn(user *model.User) (string, error) {
-	storedUser, err := uu.ur.GetUserByEmail(user)
+	var storedUser model.User
+
+	err := uu.ur.GetUserByEmail(&storedUser, user.Email)
 	if err != nil {
 		return "", err
 	}
@@ -50,7 +57,7 @@ func (uu *UserUsecase) LogIn(user *model.User) (string, error) {
 		return "", err
 	}
 
-	token, err := util.GenerateJwtToken(user.ID)
+	token, err := util.GenerateJwtToken(storedUser.ID)
 	if err != nil {
 		return "", err
 	}

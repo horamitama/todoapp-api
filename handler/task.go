@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"todoapp-api/model"
 	"todoapp-api/usecase"
@@ -57,8 +56,6 @@ func (th *TaskHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "task created"})
 }
 
-func (th *TaskHandler) Update(c *gin.Context) {}
-
 func (th *TaskHandler) List(c *gin.Context) {
 	var task model.Task
 
@@ -75,7 +72,6 @@ func (th *TaskHandler) List(c *gin.Context) {
 	}
 
 	task.UserID = userID
-	fmt.Println(task)
 	storedTask, err := th.tu.List(&task)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
@@ -85,6 +81,73 @@ func (th *TaskHandler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, storedTask)
 }
 
-func (th *TaskHandler) Get(c *gin.Context) {}
+func (th *TaskHandler) Get(c *gin.Context) {
+	var task model.Task
 
-func (th *TaskHandler) Delete(c *gin.Context) {}
+	err := c.ShouldBind(&task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+
+	authHeader := c.GetHeader("Authorization")
+	userID, err := util.GetUserIDFromAuthHeader(authHeader)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err)
+		return
+	}
+
+	task.UserID = userID
+	storedTask, err := th.tu.Get(&task)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, storedTask)
+}
+
+func (th *TaskHandler) Update(c *gin.Context) {
+	var task model.Task
+
+	err := c.ShouldBind(&task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+
+	authHeader := c.GetHeader("Authorization")
+	userID, err := util.GetUserIDFromAuthHeader(authHeader)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err)
+		return
+	}
+
+	storedTask, err := th.tu.Get(&task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	updateTask := model.Task{
+		Title:  task.Title,
+		Detail: task.Detail,
+		Status: task.Status,
+	}
+
+	updateTask.UserID = userID
+	err = th.tu.Update(&updateTask)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": storedTask})
+}
+
+func (th *TaskHandler) Delete(c *gin.Context) {
+	var task model.Task
+	err := c.ShouldBind(&task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
+}

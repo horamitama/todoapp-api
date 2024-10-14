@@ -12,7 +12,7 @@ type TaskUsecase struct {
 type TaskUsecaseInterface interface {
 	Create(*model.Task) error
 	List(*model.Task) (*[]model.Task, error)
-	Get(*model.Task) error
+	Get(*model.Task) (*model.Task, error)
 	Update(*model.Task) error
 	Delete(*model.Task) error
 }
@@ -38,11 +38,20 @@ func (tu *TaskUsecase) List(task *model.Task) (*[]model.Task, error) {
 	return &storedTasks, nil
 }
 
-func (tu *TaskUsecase) Get(task *model.Task) error {
-	return nil
+func (tu *TaskUsecase) Get(task *model.Task) (*model.Task, error) {
+	var storedTask model.Task
+	err := tu.tr.FindById(storedTask, task.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &storedTask, nil
 }
 
 func (tu *TaskUsecase) Update(task *model.Task) error {
+	err := tu.tr.Update(task)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

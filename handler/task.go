@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"todoapp-api/model"
 	"todoapp-api/usecase"
 	"todoapp-api/util"
@@ -27,16 +28,17 @@ func NewTaskHandler(tu usecase.TaskUsecaseInterface) TaskHandlerInterfase {
 
 func (th *TaskHandler) Create(c *gin.Context) {
 	var task model.Task
-	err := c.ShouldBind(&task)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
 
 	authHeader := c.GetHeader("Authorization")
 	userID, err := util.GetUserIDFromAuthHeader(authHeader)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, err)
+		return
+	}
+
+	err = c.ShouldBind(&task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
@@ -59,16 +61,21 @@ func (th *TaskHandler) Create(c *gin.Context) {
 func (th *TaskHandler) List(c *gin.Context) {
 	var task model.Task
 
-	err := c.ShouldBind(&task)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-	}
-
 	authHeader := c.GetHeader("Authorization")
 	userID, err := util.GetUserIDFromAuthHeader(authHeader)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, err)
 		return
+	}
+
+	err = c.ShouldBind(&task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+	}
+
+	err = c.ShouldBind(&task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
 	}
 
 	task.UserID = userID
@@ -84,20 +91,16 @@ func (th *TaskHandler) List(c *gin.Context) {
 func (th *TaskHandler) Get(c *gin.Context) {
 	var task model.Task
 
-	err := c.ShouldBind(&task)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-	}
-
 	authHeader := c.GetHeader("Authorization")
 	userID, err := util.GetUserIDFromAuthHeader(authHeader)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, err)
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		return
 	}
 
-	task.UserID = userID
-	storedTask, err := th.tu.Get(&task)
+	idParam := c.Param("ID")
+	taskID, _ := strconv.Atoi(idParam)
+	storedTask, err := th.tu.Get(&task, uint(userID), uint(taskID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -109,11 +112,6 @@ func (th *TaskHandler) Get(c *gin.Context) {
 func (th *TaskHandler) Update(c *gin.Context) {
 	var task model.Task
 
-	err := c.ShouldBind(&task)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-	}
-
 	authHeader := c.GetHeader("Authorization")
 	userID, err := util.GetUserIDFromAuthHeader(authHeader)
 	if err != nil {
@@ -121,7 +119,15 @@ func (th *TaskHandler) Update(c *gin.Context) {
 		return
 	}
 
-	storedTask, err := th.tu.Get(&task)
+	err = c.ShouldBind(&task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+
+	id := c.Param("ID")
+	taskID, _ := strconv.ParseInt(id, 10, 8)
+
+	storedTask, err := th.tu.Get(&task, userID, uint(taskID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
@@ -134,7 +140,7 @@ func (th *TaskHandler) Update(c *gin.Context) {
 	}
 
 	updateTask.UserID = userID
-	err = th.tu.Update(&updateTask)
+	err = th.tu.Update(&updateTask, uint(taskID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -145,9 +151,23 @@ func (th *TaskHandler) Update(c *gin.Context) {
 
 func (th *TaskHandler) Delete(c *gin.Context) {
 	var task model.Task
-	err := c.ShouldBind(&task)
+
+	idParam := c.Param("ID")
+	taskID, _ := strconv.Atoi(idParam)
+
+	authHeader := c.GetHeader("Authorization")
+	_, err := util.GetUserIDFromAuthHeader(authHeader)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err)
+		return
+	}
+
+	err = c.ShouldBind(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}
+
+	th.tu.Delete(&task, uint(taskID))
+
 	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
 }

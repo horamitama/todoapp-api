@@ -10,11 +10,11 @@ type TaskUsecase struct {
 }
 
 type TaskUsecaseInterface interface {
-	Create(*model.Task) error
-	List(*model.Task) (*[]model.Task, error)
-	Get(*model.Task) (*model.Task, error)
-	Update(*model.Task) error
-	Delete(*model.Task) error
+	Create(task *model.Task) error
+	List(task *model.Task) (*[]model.Task, error)
+	Get(task *model.Task, userID uint, taskId uint) (*model.Task, error)
+	Update(task *model.Task, taskId uint) error
+	Delete(task *model.Task, taskId uint) error
 }
 
 func NewTaskUsecase(tr repository.TaskRepositoryInterfase) TaskUsecaseInterface {
@@ -38,16 +38,18 @@ func (tu *TaskUsecase) List(task *model.Task) (*[]model.Task, error) {
 	return &storedTasks, nil
 }
 
-func (tu *TaskUsecase) Get(task *model.Task) (*model.Task, error) {
+func (tu *TaskUsecase) Get(task *model.Task, userID uint, taskID uint) (*model.Task, error) {
 	var storedTask model.Task
-	err := tu.tr.FindById(storedTask, task.ID)
+
+	err := tu.tr.FindByUserIDAndID(&storedTask, uint(userID), uint(taskID))
 	if err != nil {
 		return nil, err
 	}
+
 	return &storedTask, nil
 }
 
-func (tu *TaskUsecase) Update(task *model.Task) error {
+func (tu *TaskUsecase) Update(task *model.Task, taskId uint) error {
 	err := tu.tr.Update(task)
 	if err != nil {
 		return err
@@ -55,6 +57,10 @@ func (tu *TaskUsecase) Update(task *model.Task) error {
 	return nil
 }
 
-func (tu *TaskUsecase) Delete(task *model.Task) error {
+func (tu *TaskUsecase) Delete(task *model.Task, taskId uint) error {
+	err := tu.tr.Delete(task)
+	if err != nil {
+		return err
+	}
 	return nil
 }

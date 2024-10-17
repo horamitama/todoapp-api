@@ -12,10 +12,10 @@ type TaskRepository struct {
 
 type TaskRepositoryInterfase interface {
 	Create(task *model.Task) error
-	Update(task *model.Task) error
+	Update(task *model.Task, taskID uint) error
 	FindByUserIDAndID(task *model.Task, userID uint, taskId uint) error
 	FindAllByUserId(task *[]model.Task, userId uint) error
-	Delete(task *model.Task) error
+	Delete(task *model.Task, taskID uint) error
 }
 
 func NewTaskRepository(db *gorm.DB) TaskRepositoryInterfase {
@@ -46,16 +46,16 @@ func (tr *TaskRepository) FindAllByUserId(tasks *[]model.Task, userID uint) erro
 	return nil
 }
 
-func (tr *TaskRepository) Update(task *model.Task) error {
-	err := tr.db.Save(task).Error
+func (tr *TaskRepository) Update(task *model.Task, taskID uint) error {
+	err := tr.db.Where("id = ?", taskID).Save(&task).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (tr *TaskRepository) Delete(task *model.Task) error {
-	err := tr.db.Delete(task).Error
+func (tr *TaskRepository) Delete(task *model.Task, taskID uint) error {
+	err := tr.db.Where("id = ?", taskID).Delete(&task).Error
 	if err != nil {
 		return err
 	}

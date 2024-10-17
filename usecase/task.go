@@ -13,8 +13,8 @@ type TaskUsecaseInterface interface {
 	Create(task *model.Task) error
 	List(task *model.Task) (*[]model.Task, error)
 	Get(task *model.Task, userID uint, taskId uint) (*model.Task, error)
-	Update(task *model.Task, taskId uint) error
-	Delete(task *model.Task, taskId uint) error
+	Update(task *model.Task, taskID uint) error
+	Delete(task *model.Task, taskID uint) error
 }
 
 func NewTaskUsecase(tr repository.TaskRepositoryInterfase) TaskUsecaseInterface {
@@ -49,16 +49,16 @@ func (tu *TaskUsecase) Get(task *model.Task, userID uint, taskID uint) (*model.T
 	return &storedTask, nil
 }
 
-func (tu *TaskUsecase) Update(task *model.Task, taskId uint) error {
-	err := tu.tr.Update(task)
+func (tu *TaskUsecase) Update(task *model.Task, taskID uint) error {
+	err := tu.tr.Update(task, taskID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (tu *TaskUsecase) Delete(task *model.Task, taskId uint) error {
-	err := tu.tr.Delete(task)
+func (tu *TaskUsecase) Delete(task *model.Task, taskID uint) error {
+	err := tu.tr.Delete(task, taskID)
 	if err != nil {
 		return err
 	}

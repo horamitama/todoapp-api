@@ -71,11 +71,13 @@ func (th *TaskHandler) List(c *gin.Context) {
 	err = c.ShouldBind(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
 	}
 
 	err = c.ShouldBind(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
+		return
 	}
 
 	task.UserID = userID
@@ -122,16 +124,11 @@ func (th *TaskHandler) Update(c *gin.Context) {
 	err = c.ShouldBind(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
+		return
 	}
 
 	id := c.Param("ID")
 	taskID, _ := strconv.ParseInt(id, 10, 8)
-
-	storedTask, err := th.tu.Get(&task, userID, uint(taskID))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
 
 	updateTask := model.Task{
 		Title:  task.Title,
@@ -146,7 +143,7 @@ func (th *TaskHandler) Update(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": storedTask})
+	c.JSON(http.StatusOK, gin.H{"message": updateTask})
 }
 
 func (th *TaskHandler) Delete(c *gin.Context) {
@@ -165,6 +162,7 @@ func (th *TaskHandler) Delete(c *gin.Context) {
 	err = c.ShouldBind(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
+		return
 	}
 
 	th.tu.Delete(&task, uint(taskID))

@@ -36,7 +36,8 @@ func (uu *UserUsecase) SignUp(user *model.User) error {
 		Email:    user.Email,
 		Password: string(hash),
 	}
-	err = uu.ur.CreateUser(&newUser)
+
+	_, err = uu.ur.CreateUser(&newUser)
 	if err != nil {
 		return err
 	}

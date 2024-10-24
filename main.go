@@ -1,17 +1,17 @@
 package main
 
 import (
-	"todoapp-api/db"
 	"todoapp-api/handler"
 	"todoapp-api/repository"
 	"todoapp-api/usecase"
+	"todoapp-api/util"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
-	db := db.NewDB()
+	db := util.NewDB()
 
 	// user route
 	userRepository := repository.NewUserRepository(db)

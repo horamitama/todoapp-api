@@ -1,43 +1,14 @@
 package repository
 
 import (
-	"fmt"
 	"testing"
 	"todoapp-api/model"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"todoapp-api/util"
 )
 
-func setupTestDB() *gorm.DB {
-	port := "54320"
-	name := "postgres"
-	user := "postgres"
-	password := "postgres"
-	host := "localhost"
-
-	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user,
-		password, host,
-		port, name)
-
-	db, err := gorm.Open(postgres.Open(url), &gorm.Config{})
-	if err != nil {
-		panic("db connect failed")
-	}
-
-	return db
-}
-
-func teardownTestDB(db *gorm.DB) {
-	sqlDB, _ := db.DB()
-	if err := sqlDB.Close(); err != nil {
-		panic("db close failed")
-	}
-}
-
 func TestCreateUser(t *testing.T) {
-	testDB := setupTestDB()
-	defer teardownTestDB(testDB)
+	testDB := util.SetupTestDB()
+	defer util.TeardownTestDB(testDB)
 	ur := NewUserRepository(testDB)
 
 	t.Run("create user", func(t *testing.T) {
@@ -47,10 +18,34 @@ func TestCreateUser(t *testing.T) {
 		}
 		createdUser, err := ur.CreateUser(&user)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 		if createdUser.Email != user.Email {
-			t.Error("create user failed")
+			t.Fatal("create user failed")
+		}
+	})
+}
+
+func TestGetUserByEmail(t *testing.T) {
+	testDB := util.SetupTestDB()
+	defer util.TeardownTestDB(testDB)
+	ur := NewUserRepository(testDB)
+
+	t.Run("get user by email", func(t *testing.T) {
+		email := "hoge@a.com"
+		password := "hogehoge"
+		user := model.User{
+			Email:    email,
+			Password: password,
+		}
+		_, err := ur.CreateUser(&user)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var storedUser model.User
+		err = ur.GetUserByEmail(&storedUser, email)
+		if err != nil {
+			t.Fatal(err)
 		}
 	})
 }

@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 	"log"
-	"todoapp-api/db"
 	"todoapp-api/model"
+	"todoapp-api/util"
 )
 
 func main() {
-	dbConn := db.NewDB()
+	dbConn := util.NewDB()
 	defer fmt.Println("Successfully migrated")
-	defer db.CloseDB(dbConn)
+	defer util.CloseDB(dbConn)
 	err := dbConn.AutoMigrate(&model.User{}, &model.Task{})
 	if err != nil {
 		log.Fatal("Migrate failed")

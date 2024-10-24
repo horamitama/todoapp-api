@@ -1,4 +1,4 @@
-package db
+package util
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ func NewDB() *gorm.DB {
 		}
 	}
 
-	defer fmt.Println("Connented")
+	defer fmt.Println("DB connented")
 
 	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"),
@@ -34,7 +34,34 @@ func NewDB() *gorm.DB {
 
 func CloseDB(db *gorm.DB) {
 	sqlDB, _ := db.DB()
+	defer fmt.Println("DB closed")
 	if err := sqlDB.Close(); err != nil {
 		log.Fatal("err")
+	}
+}
+
+func SetupTestDB() *gorm.DB {
+	port := "54320"
+	name := "postgres"
+	user := "postgres"
+	password := "postgres"
+	host := "localhost"
+
+	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user,
+		password, host,
+		port, name)
+
+	db, err := gorm.Open(postgres.Open(url), &gorm.Config{})
+	if err != nil {
+		panic("db connect failed")
+	}
+
+	return db
+}
+
+func TeardownTestDB(db *gorm.DB) {
+	sqlDB, _ := db.DB()
+	if err := sqlDB.Close(); err != nil {
+		panic("db close failed")
 	}
 }

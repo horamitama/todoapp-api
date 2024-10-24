@@ -22,7 +22,7 @@ func NewTaskUsecase(tr repository.TaskRepositoryInterfase) TaskUsecaseInterface 
 }
 
 func (tu *TaskUsecase) Create(task *model.Task) error {
-	err := tu.tr.Create(task)
+	err := tu.tr.CreateTask(task)
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func (tu *TaskUsecase) Create(task *model.Task) error {
 
 func (tu *TaskUsecase) List(task *model.Task) (*[]model.Task, error) {
 	var storedTasks []model.Task
-	err := tu.tr.FindAllByUserId(&storedTasks, task.UserID)
+	err := tu.tr.FindAllTasksByUserID(&storedTasks, task.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (tu *TaskUsecase) List(task *model.Task) (*[]model.Task, error) {
 func (tu *TaskUsecase) Get(task *model.Task, userID uint, taskID uint) (*model.Task, error) {
 	var storedTask model.Task
 
-	err := tu.tr.FindByUserIDAndID(&storedTask, uint(userID), uint(taskID))
+	err := tu.tr.FindByUserIDAndTaskID(&storedTask, uint(userID), uint(taskID))
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (tu *TaskUsecase) Get(task *model.Task, userID uint, taskID uint) (*model.T
 }
 
 func (tu *TaskUsecase) Update(task *model.Task, taskID uint) error {
-	err := tu.tr.Update(task, taskID)
+	err := tu.tr.UpdateTask(task, taskID)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (tu *TaskUsecase) Update(task *model.Task, taskID uint) error {
 }
 
 func (tu *TaskUsecase) Delete(task *model.Task, taskID uint) error {
-	err := tu.tr.Delete(task, taskID)
+	err := tu.tr.DeleteTask(task, taskID)
 	if err != nil {
 		return err
 	}

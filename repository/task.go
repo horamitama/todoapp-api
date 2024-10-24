@@ -11,26 +11,26 @@ type TaskRepository struct {
 }
 
 type TaskRepositoryInterfase interface {
-	Create(task *model.Task) error
-	Update(task *model.Task, taskID uint) error
-	FindByUserIDAndID(task *model.Task, userID uint, taskId uint) error
-	FindAllByUserId(task *[]model.Task, userId uint) error
-	Delete(task *model.Task, taskID uint) error
+	CreateTask(task *model.Task) (*model.Task, error)
+	UpdateTask(task *model.Task, taskID uint) error
+	FindByUserIDAndTaskID(task *model.Task, userID uint, taskId uint) error
+	FindAllTasksByUserID(task *[]model.Task, userId uint) error
+	DeleteTask(task *model.Task, taskID uint) error
 }
 
 func NewTaskRepository(db *gorm.DB) TaskRepositoryInterfase {
 	return &TaskRepository{db}
 }
 
-func (tr *TaskRepository) Create(task *model.Task) error {
+func (tr *TaskRepository) CreateTask(task *model.Task) (*model.Task, error) {
 	err := tr.db.Create(&task).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return task, nil
 }
 
-func (tr *TaskRepository) FindByUserIDAndID(task *model.Task, userID uint, taskID uint) error {
+func (tr *TaskRepository) FindByUserIDAndTaskID(task *model.Task, userID uint, taskID uint) error {
 	err := tr.db.Where("user_id = ? AND id = ?", userID, taskID).Find(&task).Error
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func (tr *TaskRepository) FindByUserIDAndID(task *model.Task, userID uint, taskI
 	return nil
 }
 
-func (tr *TaskRepository) FindAllByUserId(tasks *[]model.Task, userID uint) error {
+func (tr *TaskRepository) FindAllTasksByUserID(tasks *[]model.Task, userID uint) error {
 	err := tr.db.Where("user_id = ?", userID).Find(&tasks).Error
 	if err != nil {
 		return err
@@ -46,7 +46,7 @@ func (tr *TaskRepository) FindAllByUserId(tasks *[]model.Task, userID uint) erro
 	return nil
 }
 
-func (tr *TaskRepository) Update(task *model.Task, taskID uint) error {
+func (tr *TaskRepository) UpdateTask(task *model.Task, taskID uint) error {
 	err := tr.db.Where("id = ?", taskID).Save(&task).Error
 	if err != nil {
 		return err
@@ -54,7 +54,7 @@ func (tr *TaskRepository) Update(task *model.Task, taskID uint) error {
 	return nil
 }
 
-func (tr *TaskRepository) Delete(task *model.Task, taskID uint) error {
+func (tr *TaskRepository) DeleteTask(task *model.Task, taskID uint) error {
 	err := tr.db.Where("id = ?", taskID).Delete(&task).Error
 	if err != nil {
 		return err
